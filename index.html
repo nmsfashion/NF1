@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NMS Fashion — Trendy Apparel</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f6f7f9;color:#111827}
+button,input,textarea,select{font:inherit}
+
+/* Top Bar */
+.top{background:#0b1220;color:#fff;text-align:center;padding:9px;font-size:13px}
+
+/* Header */
+header{height:76px;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 5%;position:sticky;top:0;z-index:20;border-bottom:1px solid #e5e7eb}
+.logo{font-size:22px;font-weight:800;white-space:nowrap}
+.logo span{background:#111827;color:#fff;padding:8px 11px;border-radius:9px;margin-right:5px}
+.logo b{color:#e11d48}
+.search{display:flex;flex:1;max-width:600px;margin:0 15px}
+.search input{width:100%;padding:11px 14px;border:1px solid #ddd;border-radius:10px 0 0 10px;outline:none}
+.search button{border:0;background:#111827;color:#fff;padding:0 20px;border-radius:0 10px 10px 0;cursor:pointer}
+.cartBtn{border:1px solid #ddd;background:#fff;padding:10px 15px;border-radius:10px;font-weight:bold;cursor:pointer;white-space:nowrap}
+.cartBtn span{background:#e11d48;color:#fff;border-radius:20px;padding:2px 7px;font-size:12px}
+
+/* Nav Bar */
+nav{background:#fff;border-bottom:1px solid #ddd;display:flex;overflow-x:auto;padding:0 5%;-webkit-overflow-scrolling:touch}
+nav::-webkit-scrollbar{display:none}
+nav button{background:none;border:0;padding:15px;cursor:pointer;font-weight:bold;color:#64748b;white-space:nowrap}
+nav button.active{color:#e11d48;border-bottom:2px solid #e11d48}
+
+/* Hero Section */
+.hero{max-width:1180px;margin:30px auto;padding:42px;border-radius:25px;background:linear-gradient(120deg,#1f0811,#47172a);color:#fff;display:grid;grid-template-columns:1.2fr .8fr;gap:30px;align-items:center}
+.hero h1{font-size:46px;margin:15px 0}.hero h1 span{color:#fb7185}.hero p{color:#cbd5e1;line-height:1.7}
+.btn{border:0;padding:13px 20px;border-radius:10px;font-weight:bold;cursor:pointer}
+.primary{background:#e11d48;color:#fff}
+.heroProduct{background:#fff;color:#111827;padding:15px;border-radius:20px}
+.heroProduct img{width:100%;height:260px;object-fit:cover;border-radius:12px}
+
+/* Layout Container */
+.container{max-width:1180px;margin:40px auto;padding:0 15px}
+.title{display:flex;justify-content:space-between;align-items:flex-end}
+.title h2{font-size:28px;margin:5px 0}.title small{color:#e11d48;font-weight:bold}
+.filters{display:flex;gap:8px;overflow-x:auto;margin:20px 0;padding-bottom:5px}
+.filters::-webkit-scrollbar{display:none}
+.filter{border:1px solid #ddd;background:#fff;padding:8px 16px;border-radius:30px;cursor:pointer;white-space:nowrap;font-size:13px}
+.filter.active{background:#111827;color:#fff}
+
+/* Product Grid */
+.products{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.product{background:#fff;border-radius:15px;overflow:hidden;border:1px solid #e5e7eb;transition:.2s;display:flex;flex-direction:column;justify-content:space-between}
+.product:hover{transform:translateY(-4px);box-shadow:0 15px 35px #0001}
+.product img{width:100%;height:230px;object-fit:cover;background:#fff;cursor:pointer}
+.info{padding:14px;display:flex;flex-direction:column;flex:1}
+.category{font-size:10px;background:#ffe4e6;color:#be123c;padding:4px 8px;border-radius:5px;font-weight:bold;width:max-content;margin-bottom:8px}
+.info h3{font-size:14px;line-height:1.4;margin:0 0 6px 0;font-weight:bold}
+.info p{font-size:11px;color:#6b7280;line-height:1.4;margin:0 0 10px 0;flex:1}
+.price{font-size:18px;font-weight:bold;margin-bottom:12px}
+.old{font-size:12px;color:#999;text-decoration:line-through;margin-left:6px}
+.add{width:100%;border:0;background:#ffe4e6;color:#be123c;padding:11px;border-radius:9px;font-weight:bold;cursor:pointer}
+.add:hover{background:#e11d48;color:#fff}
+
+/* Features */
+.features{max-width:1180px;margin:50px auto;background:#fff;border:1px solid #eee;border-radius:18px;display:grid;grid-template-columns:repeat(4,1fr)}
+.feature{padding:25px;border-right:1px solid #eee;text-align:center}
+.feature:last-child{border:0}.feature h3{font-size:14px;margin:10px 0 5px}.feature p{font-size:11px;color:#777;margin:0}
+
+/* Footer */
+footer{background:#09111f;color:#cbd5e1;padding:45px 5%;margin-top:60px}
+.footer{max-width:1180px;margin:auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:30px}
+.footer h3{color:#fff;margin-top:0}.footer p,.footer a{font-size:12px;color:#94a3b8;display:block;margin:9px 0;text-decoration:none}
+
+/* Cart Slide Drawer */
+.overlay{position:fixed;inset:0;background:#0008;z-index:40;display:none}.overlay.show{display:block}
+.cart{position:fixed;right:-450px;top:0;width:min(450px,100%);height:100vh;background:#fff;z-index:50;transition:.3s;display:flex;flex-direction:column}
+.cart.open{right:0}
+.cartHead{display:flex;justify-content:space-between;align-items:center;padding:20px;border-bottom:1px solid #ddd}
+.cartHead h2{margin:0;font-size:18px}
+.close{border:0;background:#eee;border-radius:50%;width:35px;height:35px;font-size:20px;cursor:pointer;display:grid;place-items:center}
+.cartItems{overflow-y:auto;flex:1}
+.cartItem{display:flex;gap:12px;padding:15px 20px;border-bottom:1px solid #eee}
+.cartItem img{width:65px;height:65px;object-fit:cover;border-radius:6px}
+.cartItem h4{margin:0;font-size:13px}
+.qty{display:flex;gap:8px;align-items:center;margin-top:8px}
+.qty button{border:1px solid #ddd;background:#fff;width:25px;height:25px;cursor:pointer;border-radius:4px}
+.remove{border:0!important;color:#e11d48!important;background:none!important;cursor:pointer;font-size:12px}
+.cartBottom{padding:20px;border-top:1px solid #ddd}
+.total{display:flex;justify-content:space-between;font-size:18px;font-weight:bold;margin-bottom:15px}
+
+/* Modal */
+.modal{position:fixed;inset:0;z-index:60;display:none;place-items:center;padding:15px}.modal.show{display:grid}
+.modalBox{background:#fff;width:min(520px,100%);border-radius:18px;padding:25px;position:relative;max-height:90vh;overflow-y:auto}
+.form label{font-size:12px;font-weight:bold;display:block;margin:13px 0}
+.form input,.form textarea,.form select{width:100%;padding:11px;margin-top:6px;border:1px solid #ddd;border-radius:9px;outline:none}
+.confirm{background:#ffe4e6;color:#be123c;padding:15px;border-radius:10px;font-weight:bold;margin-top:15px;text-align:center}
+
+/* Product Detail Modal View */
+#productModal .modalBox{width:100%;max-width:900px;max-height:90vh;border-radius:18px;padding:30px}
+.productDetailPage{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start}
+.mainGallery{background:#f8fafc;border:1px solid #e5e7eb;border-radius:15px;display:flex;align-items:center;justify-content:center;padding:15px}
+.mainGallery img{width:100%;max-height:380px;object-fit:cover;border-radius:10px}
+.detailInfo h2{font-size:24px;margin:10px 0}
+.detailPrice{font-size:24px;font-weight:800;color:#e11d48;margin:10px 0}
+.detailIntro{font-size:13px;color:#64748b;line-height:1.6}
+.specBox{background:#f8fafc;border-radius:10px;padding:12px;margin:15px 0}
+.specBox h3{margin:0 0 8px;font-size:14px}
+.specBox ul{margin:0;padding-left:18px;color:#475569;font-size:12px;line-height:1.8}
+
+/* ========================================================= */
+/* MOBILE RESPONSIVE STYLES (Screen size <= 768px)           */
+/* ========================================================= */
+@media (max-width: 768px) {
+  /* Header adjustment */
+  header{height:auto;padding:12px;flex-wrap:wrap;gap:10px}
+  .logo{font-size:18px}
+  .search{order:3;max-width:100%;margin:5px 0 0 0;width:100%}
+  .search input{padding:9px 12px;font-size:13px}
+  .search button{padding:0 15px;font-size:13px}
+  .cartBtn{padding:8px 12px;font-size:13px}
+
+  /* Navigation */
+  nav button{padding:12px 10px;font-size:13px}
+
+  /* Hero Section Mobile */
+  .hero{grid-template-columns:1fr;padding:20px;margin:15px;border-radius:16px;gap:20px}
+  .hero h1{font-size:28px;margin:10px 0}
+  .hero p{font-size:13px}
+  .heroProduct{padding:10px}
+  .heroProduct img{height:180px}
+
+  /* Container & Grid Mobile */
+  .container{margin:20px auto}
+  .title h2{font-size:20px}
+  .products{grid-template-columns:repeat(2,1fr);gap:10px} /* 2 columns on mobile */
+  .product img{height:150px}
+  .info{padding:10px}
+  .info h3{font-size:12px;line-height:1.3;min-height:32px}
+  .info p{display:none} /* Hide long text on mobile cards */
+  .price{font-size:15px;margin-bottom:8px}
+  .add{padding:8px;font-size:12px}
+
+  /* Features & Footer Mobile */
+  .features{grid-template-columns:repeat(2,1fr);margin:30px 15px}
+  .feature{padding:15px}
+  .footer{grid-template-columns:1fr;gap:20px}
+
+  /* Full Screen Modals for Mobile */
+  #productModal .modalBox{width:100%;height:100vh;max-height:100vh;border-radius:0;padding:20px;position:fixed;inset:0}
+  .productDetailPage{grid-template-columns:1fr;gap:15px}
+  .mainGallery img{max-height:260px}
+  .detailInfo h2{font-size:18px}
+  .detailPrice{font-size:20px}
+}
+</style>
+</head>
+<body>
+
+<div class="top">🚚 Fast Delivery Across Bangladesh • Cash On Delivery Available</div>
+
+<header>
+  <div class="logo"><span>NMS</span><b>Fashion</b></div>
+  <div class="search">
+    <input id="search" placeholder="Search t-shirts, dresses, shirts...">
+    <button onclick="searchProducts()">Search</button>
+  </div>
+  <button class="cartBtn" onclick="openCart()">🛒 Cart <span id="cartCount">0</span></button>
+</header>
+
+<nav>
+  <button class="active" onclick="filterCat('All',this)">All Fashion</button>
+  <button onclick="filterCat('Men T-Shirts',this)">Men T-Shirts</button>
+  <button onclick="filterCat('Casual Shirts',this)">Casual Shirts</button>
+  <button onclick="filterCat('Women Wear',this)">Women Wear</button>
+</nav>
+
+<section class="hero">
+  <div>
+    <small>⚡ NEW FASHION COLLECTION 2026</small>
+    <h1>Elevate Your<br><span>Wardrobe Style.</span></h1>
+    <p>Discover premium cotton men's t-shirts, stylish casual shirts, and elegant women's wear at unbeatable prices from NMS Fashion.</p>
+    <button class="btn primary" onclick="document.getElementById('products').scrollIntoView()">Shop Collection →</button>
+  </div>
+  <div class="heroProduct">
+    <img src="https://dropshiping.com.bd/public/uploads/all/2023/10/photo_2023-10-18_16-43-30.jpg" alt="Featured product">
+    <h3 style="margin:10px 0 5px;font-size:14px">Classic Cotton Casual Shirt</h3>
+    <strong style="color:#e11d48">৳750</strong>
+  </div>
+</section>
+
+<section class="container">
+  <div class="title">
+    <div><small>HANDPICKED TRENDS</small><h2>Popular Styles</h2></div>
+    <span id="result" style="font-size:13px;color:#666"></span>
+  </div>
+  <div class="filters">
+    <button class="filter active" onclick="filterCat('All',this)">All Items</button>
+    <button class="filter" onclick="filterCat('Men T-Shirts',this)">Men T-Shirts</button>
+    <button class="filter" onclick="filterCat('Casual Shirts',this)">Casual Shirts</button>
+    <button class="filter" onclick="filterCat('Women Wear',this)">Women Wear</button>
+  </div>
+  <div class="products" id="products"></div>
+</section>
+
+<section class="features">
+  <div class="feature"><strong>🚚</strong><h3>Nationwide Delivery</h3><p>Delivery across Bangladesh</p></div>
+  <div class="feature"><strong>💳</strong><h3>Cash On Delivery</h3><p>Pay after receiving product</p></div>
+  <div class="feature"><strong>🔒</strong><h3>Secure Order</h3><p>100% Privacy guaranteed</p></div>
+  <div class="feature"><strong>💬</strong><h3>Easy Support</h3><p>Fast customer response</p></div>
+</section>
+
+<footer>
+  <div class="footer">
+    <div>
+      <h3>NMS Fashion</h3>
+      <p>Your ultimate destination for modern apparel, high-quality shirts, men's t-shirts, and stylish women's clothing.</p>
+    </div>
+    <div>
+      <h3>Categories</h3>
+      <p>Men T-Shirts</p><p>Casual Shirts</p><p>Women Wear</p>
+    </div>
+    <div>
+      <h3>Help</h3>
+      <p>How To Order</p><p>Delivery Policy</p><p>Cash On Delivery</p>
+    </div>
+    <div>
+      <h3>Contact</h3>
+      <p>📞 01700000000</p>
+      <p>✉ support@nmsfashion.com</p>
+      <p>📍 Dhaka, Bangladesh</p>
+    </div>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+<!-- Cart Drawer -->
+<div class="cart" id="cart">
+  <div class="cartHead">
+    <h2>Your Shopping Cart</h2>
+    <button class="close" onclick="closeAll()">×</button>
+  </div>
+  <div class="cartItems" id="cartItems"></div>
+  <div class="cartBottom">
+    <div class="total"><span>Total</span><span id="total">৳0</span></div>
+    <button class="btn primary" style="width:100%" onclick="openCheckout()">Proceed To Order →</button>
+  </div>
+</div>
+
+<!-- Product Detail Modal -->
+<div class="modal" id="productModal">
+  <div class="modalBox">
+    <button class="close" onclick="closeAll()" style="position:absolute;right:15px;top:15px;z-index:10">×</button>
+    <div id="productDetails"></div>
+  </div>
+</div>
+
+<!-- Order Modal -->
+<div class="modal" id="orderModal">
+  <div class="modalBox">
+    <button class="close" onclick="closeAll()" style="position:absolute;right:15px;top:15px">×</button>
+    <h2 style="margin-top:0">Complete Your Order</h2>
+    <p style="color:#64748b;font-size:13px">Enter your delivery address to confirm the order.</p>
+    <form class="form" id="orderForm" onsubmit="submitOrder(event)">
+      <label>Full Name<input required name="name" placeholder="Enter your full name"></label>
+      <label>Phone Number<input required name="phone" type="tel" pattern="01[0-9]{9}" placeholder="01XXXXXXXXX"></label>
+      <label>Full Address<textarea required name="address" rows="3" placeholder="House/Road, Area, District"></textarea></label>
+      <label>Payment Method<select name="payment"><option>Cash On Delivery</option></select></label>
+      <div class="total" style="margin-top:15px"><span>Order Total:</span><strong id="orderTotal">৳0</strong></div>
+      <button class="btn primary" style="width:100%" type="submit">Confirm Order ✓</button>
+    </form>
+    <div id="confirmation" class="confirm" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+// Sample Products with Dropshipper Bangladesh images
+const products = [
+  {
+    "id": 1,
+    "name": "Men Premium Cotton Casual Shirt",
+    "category": "Casual Shirts",
+    "price": 750,
+    "old": 1150,
+    "code": "CS01",
+    "image": "https://mohasagor.com.bd/public/storage/images/products/TfIzVsK8505zbymntHDgLj96WmGVa8QBdgA4UVms.png",
+    "intro": "Premium quality full sleeve cotton casual shirt designed for modern men.",
+    "spec": ["100% Cotton", "Slim Fit Design", "Breathable Fabric", "Machine Washable"]
+  },
+  {
+    "id": 2,
+    "name": "Stylish Printed Full Sleeve Shirt",
+    "category": "Casual Shirts",
+    "price": 790,
+    "old": 1200,
+    "code": "CS02",
+    "image": "https://scontent.fdac202-1.fna.fbcdn.net/v/t39.30808-6/849076558_122100205221512668_4290105714754415822_n.jpg?stp=dst-jpg_tt6&cstp=mx1024x1536&ctp=s1024x1536&_nc_cat=109&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeEMs7wGxv2yxDYkdqHesynmeiYfe1f921d6Jh97V_3bV5Jj4QTPukz0BGz3l4k3lUh7zSL-zkhDQ9dd8jCNZTQh&_nc_ohc=f_c2kCC_NcIQ7kNvwFMEYu3&_nc_oc=Adq5UHBdHhxcjkRUJXMLyhjhbl4heNKMO4DZUFkwAr9cgrwSvyWLrYY32YR1IZlTJ0Q&_nc_zt=23&_nc_ht=scontent.fdac202-1.fna&_nc_gid=urHvXLXlHYaSY0dWlvxaDA&_nc_ss=7b2a8&oh=00_AQNIO0TafsiedGQgJumohW58S2XPIhH8U5yaGQItYGDjGw&oe=6ADB7AF0",
+    "intro": "Trendy digital printed casual shirt, perfect for hangout and office wear.",
+    "spec": ["Soft Cotton Blend", "Comfortable Fit", "Color Guarantee", "Attractive Print"]
+  },
+  {
+    "id": 3,
+    "name": "Urban Oversized Black T-Shirt",
+    "category": "Men T-Shirts",
+    "price": 550,
+    "old": 850,
+    "code": "TS01",
+    "image": "https://scontent.fdac202-1.fna.fbcdn.net/v/t39.30808-6/848469622_122098622895512668_8533050984741003706_n.jpg?stp=dst-jpg_tt6&cstp=mx1254x1254&ctp=s1254x1254&_nc_cat=106&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeFAIg4Jhf5KOykLUDCGOZ3NFYjT6NM-HQ4ViNPo0z4dDrENPFMsZaWPwjA6tTCCVfmQESUnDiFbm_3qekW6e3Zi&_nc_ohc=2oXYuaSJ0LkQ7kNvwHaWpr5&_nc_oc=Adpx_uxavTv12WFB9_rayFo4bd-3tZkGgDW4jcM_8A8MKyYQ2sCKv1twHPYdf70wrlc&_nc_zt=23&_nc_ht=scontent.fdac202-1.fna&_nc_gid=C_IROjAzQLabrqH2p1pn4A&_nc_ss=7b2a8&oh=00_AQNgTLjh6O8aVHEmomy97KNfh3MY3G62XumALLKTm28C9g&oe=6ADB6EA0",
+    "intro": "Heavyweight 100% combed cotton streetwear t-shirt with premium finish.",
+    "spec": ["180 GSM Cotton", "Oversized Fit", "Anti-Shrink Fabric", "Durable Neck Line"]
+  },
+  {
+    "id": 4,
+    "name": "Premium White Crew Neck T-Shirt",
+    "category": "Men T-Shirts",
+    "price": 490,
+    "old": 750,
+    "code": "TS02",
+    "image": "https://dropshiping.com.bd/public/uploads/all/2023/09/photo_2023-09-24_15-18-08.jpg",
+    "intro": "Essential solid white t-shirt crafted for everyday comfort and clean looks.",
+    "spec": ["100% Organic Cotton", "Regular Fit", "Breathable", "Fade Resistant"]
+  },
+  {
+    "id": 5,
+    "name": "Exclusive Women Linen Three Piece",
+    "category": "Women Wear",
+    "price": 1450,
+    "old": 1950,
+    "code": "WW01",
+    "image": "https://dropshiping.com.bd/public/uploads/all/2023/09/photo_2023-09-20_12-25-30.jpg",
+    "intro": "Elegant printed linen suit with matching Dupatta and Salwar.",
+    "spec": ["Linen Fabric", "Digital Printed Design", "Comfortable Wear", "Unstitched / Standard Size"]
+  },
+  {
+    "id": 6,
+    "name": "Designer Women Cotton Salwar Kameez",
+    "category": "Women Wear",
+    "price": 1590,
+    "old": 2200,
+    "code": "WW02",
+    "image": "https://dropshiping.com.bd/public/uploads/all/2023/09/photo_2023-09-20_12-25-33.jpg",
+    "intro": "Chic traditional outfit crafted with premium cotton for stylish outings.",
+    "spec": ["Pure Cotton Material", "All-Over Print", "Soft & Smooth Texture", "Includes Dupatta"]
+  }
+];
+
+let cart = [];
+
+function renderProducts(items) {
+  const container = document.getElementById('products');
+  document.getElementById('result').textContent = `${items.length} items found`;
+  container.innerHTML = items.map(p => `
+    <div class="product">
+      <img src="${p.image}" alt="${p.name}" onclick="openProduct(${p.id})">
+      <div class="info">
+        <span class="category">${p.category}</span>
+        <h3 onclick="openProduct(${p.id})" style="cursor:pointer">${p.name}</h3>
+        <p>${p.intro}</p>
+        <div class="price">৳${p.price} <span class="old">৳${p.old}</span></div>
+        <button class="add" onclick="addToCart(${p.id})">Add To Cart</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterCat(cat, btn) {
+  document.querySelectorAll('nav button, .filter').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  if(cat === 'All') {
+    renderProducts(products);
+  } else {
+    renderProducts(products.filter(p => p.category === cat));
+  }
+}
+
+function searchProducts() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const filtered = products.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+  renderProducts(filtered);
+}
+
+function openProduct(id) {
+  const p = products.find(prod => prod.id === id);
+  if(!p) return;
+  document.getElementById('productDetails').innerHTML = `
+    <div class="productDetailPage">
+      <div class="mainGallery"><img src="${p.image}" alt="${p.name}"></div>
+      <div class="detailInfo">
+        <span class="category">${p.category}</span>
+        <h2>${p.name}</h2>
+        <div class="detailPrice">৳${p.price} <span class="old">৳${p.old}</span></div>
+        <p class="detailIntro">${p.intro}</p>
+        <div style="font-size:12px;margin:10px 0;color:#555">Code: <strong>#${p.code}</strong> | Status: <strong style="color:green">In Stock</strong></div>
+        <div class="specBox">
+          <h3>Key Features:</h3>
+          <ul>${p.spec.map(s => `<li>${s}</li>`).join('')}</ul>
+        </div>
+        <button class="btn primary" style="width:100%;margin-top:10px;padding:14px" onclick="addToCart(${p.id}); closeAll(); openCart();">Add To Cart & Order</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('productModal').classList.add('show');
+  document.getElementById('overlay').classList.add('show');
+}
+
+function addToCart(id) {
+  const p = products.find(prod => prod.id === id);
+  const existing = cart.find(item => item.id === id);
+  if(existing) {
+    existing.qty++;
+  } else {
+    cart.push({...p, qty: 1});
+  }
+  updateCartUI();
+}
+
+function updateCartUI() {
+  const count = cart.reduce((sum, item) => sum + item.qty, 0);
+  document.getElementById('cartCount').textContent = count;
+  const itemsContainer = document.getElementById('cartItems');
+  
+  if(cart.length === 0) {
+    itemsContainer.innerHTML = '<p style="text-align:center;color:#64748b;margin-top:40px;">Your cart is empty.</p>';
+    document.getElementById('total').textContent = '৳0';
+    return;
+  }
+
+  itemsContainer.innerHTML = cart.map(item => `
+    <div class="cartItem">
+      <img src="${item.image}" alt="${item.name}">
+      <div>
+        <h4>${item.name}</h4>
+        <div class="price" style="font-size:14px;margin:4px 0;color:#e11d48">৳${item.price}</div>
+        <div class="qty">
+          <button onclick="changeQty(${item.id}, -1)">-</button>
+          <span>${item.qty}</span>
+          <button onclick="changeQty(${item.id}, 1)">+</button>
+          <button class="remove" onclick="removeItem(${item.id})">Remove</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  document.getElementById('total').textContent = `৳${total}`;
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(i => i.id === id);
+  if(item) {
+    item.qty += delta;
+    if(item.qty <= 0) {
+      cart = cart.filter(i => i.id !== id);
+    }
+    updateCartUI();
+  }
+}
+
+function removeItem(id) {
+  cart = cart.filter(i => i.id !== id);
+  updateCartUI();
+}
+
+function openCart() {
+  document.getElementById('cart').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+}
+
+function closeAll() {
+  document.getElementById('cart').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+  document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
+}
+
+function openCheckout() {
+  if(cart.length === 0) {
+    alert('Your cart is empty!');
+    return;
+  }
+  closeAll();
+  const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  document.getElementById('orderTotal').textContent = `৳${total}`;
+  document.getElementById('orderModal').classList.add('show');
+  document.getElementById('overlay').classList.add('show');
+}
+
+function submitOrder(e) {
+  e.preventDefault();
+  const form = document.getElementById('orderForm');
+  form.style.display = 'none';
+  const conf = document.getElementById('confirmation');
+  conf.style.display = 'block';
+  conf.innerHTML = '🎉 Order placed successfully! Thank you for shopping with NMS Fashion. We will call you soon to confirm order.';
+  cart = [];
+  updateCartUI();
+}
+
+// Initialize
+renderProducts(products);
+</script>
+</body>
+</html>

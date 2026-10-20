@@ -87,12 +87,9 @@ footer{background:#09111f;color:#cbd5e1;padding:45px 5%;margin-top:60px}
 .cartBottom{padding:20px;border-top:1px solid #ddd}
 .total{display:flex;justify-content:space-between;font-size:18px;font-weight:bold;margin-bottom:15px}
 
-/* Modal */
+/* Product Detail Modal */
 .modal{position:fixed;inset:0;z-index:60;display:none;place-items:center;padding:15px}.modal.show{display:grid}
 .modalBox{background:#fff;width:min(520px,100%);border-radius:18px;padding:25px;position:relative;max-height:90vh;overflow-y:auto}
-.form label{font-size:12px;font-weight:bold;display:block;margin:13px 0}
-.form input,.form textarea,.form select{width:100%;padding:11px;margin-top:6px;border:1px solid #ddd;border-radius:9px;outline:none}
-.confirm{background:#ffe4e6;color:#be123c;padding:15px;border-radius:10px;font-weight:bold;margin-top:15px;text-align:center}
 
 /* Product Detail Modal View */
 #productModal .modalBox{width:100%;max-width:900px;max-height:90vh;border-radius:18px;padding:30px}
@@ -240,24 +237,6 @@ footer{background:#09111f;color:#cbd5e1;padding:45px 5%;margin-top:60px}
   <div class="modalBox">
     <button class="close" onclick="closeAll()" style="position:absolute;right:15px;top:15px;z-index:10">×</button>
     <div id="productDetails"></div>
-  </div>
-</div>
-
-<!-- Order Modal -->
-<div class="modal" id="orderModal">
-  <div class="modalBox">
-    <button class="close" onclick="closeAll()" style="position:absolute;right:15px;top:15px">×</button>
-    <h2 style="margin-top:0">Complete Your Order</h2>
-    <p style="color:#64748b;font-size:13px">Enter your delivery address to confirm the order.</p>
-    <form class="form" id="orderForm" onsubmit="submitOrder(event)">
-      <label>Full Name<input required name="name" placeholder="Enter your full name"></label>
-      <label>Phone Number<input required name="phone" type="tel" pattern="01[0-9]{9}" placeholder="01XXXXXXXXX"></label>
-      <label>Full Address<textarea required name="address" rows="3" placeholder="House/Road, Area, District"></textarea></label>
-      <label>Payment Method<select name="payment"><option>Cash On Delivery</option></select></label>
-      <div class="total" style="margin-top:15px"><span>Order Total:</span><strong id="orderTotal">৳0</strong></div>
-      <button class="btn primary" style="width:100%" type="submit">Confirm Order ✓</button>
-    </form>
-    <div id="confirmation" class="confirm" style="display:none"></div>
   </div>
 </div>
 
@@ -849,43 +828,8 @@ function openCheckout() {
     alert('Your cart is empty!');
     return;
   }
-  closeAll();
-  const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-  document.getElementById('orderTotal').textContent = `৳${total}`;
-  document.getElementById('orderModal').classList.add('show');
-  document.getElementById('overlay').classList.add('show');
-}
-
-function submitOrder(e) {
-  e.preventDefault();
-  const form = document.getElementById('orderForm');
-  
-  // Collect customer details
-  const formData = new FormData(form);
-  const orderData = {
-    name: formData.get('name'),
-    phone: formData.get('phone'),
-    address: formData.get('address'),
-    payment: formData.get('payment'),
-    items: cart.map(i => `${i.name} (Qty: ${i.qty}, Code: ${i.code})`).join(', '),
-    total: cart.reduce((sum, item) => sum + (item.price * item.qty), 0)
-  };
-
-  // Send data to Google Sheets URL
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbwbtxGDF5n6yTnrgbgfCZ_dy3cZ_2mxOv6-hhlwZ0WrXc4MIwTVckyoGXgEdN8keAbw/exec';
-  fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(orderData) })
-    .then(() => {
-      form.style.display = 'none';
-      const conf = document.getElementById('confirmation');
-      conf.style.display = 'block';
-      conf.innerHTML = '🎉 Order placed successfully! Thank you for shopping with NMS Fashion. We will call you soon to confirm order.';
-      cart = [];
-      updateCartUI();
-    })
-    .catch(error => {
-      console.error('Error!', error.message);
-      alert('Order submission failed. Please try again.');
-    });
+  // Redirect to Google Form
+  window.open('https://docs.google.com/forms/d/e/1FAIpQLScXgeQ5YIlIAk2-F9zc_qsPE3Dmt0ENhLz4TLxRDfk8PbZJ6Q/viewform', '_blank');
 }
 
 renderProducts(products);
@@ -906,7 +850,7 @@ renderProducts(products);
       } while (nextIndex === currentIndex);
       currentIndex = nextIndex;
     }
-    const product = products.findById ? null : products[currentIndex]; // Safe fallback
+    const product = products[currentIndex];
     heroImage.onerror = function () {
       heroImage.alt = 'Product image unavailable';
     };

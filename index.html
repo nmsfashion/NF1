@@ -859,12 +859,33 @@ function openCheckout() {
 function submitOrder(e) {
   e.preventDefault();
   const form = document.getElementById('orderForm');
-  form.style.display = 'none';
-  const conf = document.getElementById('confirmation');
-  conf.style.display = 'block';
-  conf.innerHTML = '🎉 Order placed successfully! Thank you for shopping with NMS Fashion. We will call you soon to confirm order.';
-  cart = [];
-  updateCartUI();
+  
+  // Collect customer details
+  const formData = new FormData(form);
+  const orderData = {
+    name: formData.get('name'),
+    phone: formData.get('phone'),
+    address: formData.get('address'),
+    payment: formData.get('payment'),
+    items: cart.map(i => `${i.name} (Qty: ${i.qty}, Code: ${i.code})`).join(', '),
+    total: cart.reduce((sum, item) => sum + (item.price * item.qty), 0)
+  };
+
+  // Send data to Google Sheets URL
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbwbtxGDF5n6yTnrgbgfCZ_dy3cZ_2mxOv6-hhlwZ0WrXc4MIwTVckyoGXgEdN8keAbw/exec';
+  fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(orderData) })
+    .then(() => {
+      form.style.display = 'none';
+      const conf = document.getElementById('confirmation');
+      conf.style.display = 'block';
+      conf.innerHTML = '🎉 Order placed successfully! Thank you for shopping with NMS Fashion. We will call you soon to confirm order.';
+      cart = [];
+      updateCartUI();
+    })
+    .catch(error => {
+      console.error('Error!', error.message);
+      alert('Order submission failed. Please try again.');
+    });
 }
 
 renderProducts(products);
@@ -885,7 +906,7 @@ renderProducts(products);
       } while (nextIndex === currentIndex);
       currentIndex = nextIndex;
     }
-    const product = products[currentIndex];
+    const product = products.findById ? null : products[currentIndex]; // Safe fallback
     heroImage.onerror = function () {
       heroImage.alt = 'Product image unavailable';
     };
@@ -901,4 +922,3 @@ renderProducts(products);
 </script>
 </body>
 </html>
-```eof

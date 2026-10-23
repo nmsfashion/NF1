@@ -903,13 +903,70 @@ function showToast(msg) {
   }, 4000);
 }
 
-function handleOrderSubmit(e, prodId) {
+async function handleOrderSubmit(e, prodId) {
   e.preventDefault();
-  const name = document.getElementById('custName').value;
-  const phone = document.getElementById('custPhone').value;
+
+  const product = products.find(p => p.id === prodId);
+  if (!product) return;
+
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const address = document.getElementById('custAddress').value.trim();
   const size = document.getElementById('custSize').value;
-  showToast(`ধন্যবাদ ${name}! Size: ${size} সহ আপনার অর্ডারটি কনফার্ম করার জন্য ধন্যবাদ। আমরা শীঘ্রই ${phone} নম্বরে কল করবো।`);
-  closeModal();
+  const quantity = parseInt(document.getElementById('custQty').value, 10) || 1;
+  const deliveryFee = parseInt(document.querySelector('input[name="delivery"]:checked').value, 10);
+  const subtotal = product.price * quantity;
+  const total = subtotal + deliveryFee;
+  const submitButton = e.submitter || e.target.querySelector('button[type="submit"]');
+
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = 'Submitting Order...';
+  }
+
+  const orderData = {
+    _subject: `New Online Shop Order - ${product.code}`,
+    order_status: 'New Order',
+    customer_name: name,
+    customer_phone: phone,
+    delivery_address: address,
+    product_name: product.name,
+    product_code: product.code,
+    product_price: product.price,
+    size: size,
+    quantity: quantity,
+    delivery_area_fee: deliveryFee,
+    subtotal: subtotal,
+    total_amount: total,
+    payment_method: 'Cash On Delivery'
+  };
+
+  try {
+    const response = await fetch('https://formsubmit.app/f/st4evxqjjp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(orderData)
+    });
+
+    const result = await response.json();
+    if (!response.ok || result.ok === false) {
+      throw new Error(result.error || 'Order submission failed');
+    }
+
+    showToast(`ধন্যবাদ ${name}! আপনার অর্ডারটি জমা হয়েছে। আমরা শীঘ্রই ${phone} নম্বরে কল করবো।`);
+    closeModal();
+  } catch (error) {
+    console.error('Order submission error:', error);
+    showToast('অর্ডার জমা হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।');
+  } finally {
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Confirm Order (Cash On Delivery)';
+    }
+  }
 }
 
 function closeModal() {

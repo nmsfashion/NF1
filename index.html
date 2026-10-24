@@ -34,8 +34,15 @@ nav button.active{color:#e11d48;border-bottom:2px solid #e11d48}
 .primary{background:#e11d48;color:#fff}
 .whatsapp-btn{background:#25d366;color:#fff;border:0;padding:12px 18px;border-radius:9px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px}
 .whatsapp-btn:hover{background:#1da851}
-.heroProduct{background:#fff;color:#111827;padding:15px;border-radius:20px}
-.heroProduct img{width:100%;height:260px;object-fit:cover;border-radius:12px}
+
+/* Change 1: Hero Carousel Slider Styling */
+.heroProductWrapper{position:relative;overflow:hidden;border-radius:20px;background:#fff;color:#111827;padding:15px;box-shadow:0 10px 25px rgba(0,0,0,0.3)}
+.heroSlider{display:flex;transition:transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);width:100%}
+.heroSlide{min-width:100%;box-sizing:border-box}
+.heroSlide img{width:100%;height:280px;object-fit:cover;border-radius:12px;display:block}
+.heroDots{display:flex;justify-content:center;gap:6px;margin-top:10px}
+.heroDot{width:8px;height:8px;border-radius:50%;background:#cbd5e1;cursor:pointer;transition:0.3s}
+.heroDot.active{background:#e11d48;width:20px;border-radius:10px}
 
 /* Floating WhatsApp Button */
 .floating-whatsapp{position:fixed;bottom:25px;right:25px;z-index:99;background:#25d366;color:#fff;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 25px rgba(37,211,102,0.4);text-decoration:none;transition:transform 0.3s;font-size:30px}
@@ -108,17 +115,24 @@ footer{background:#09111f;color:#cbd5e1;padding:45px 5%;margin-top:60px}
 .summaryTotal{display:flex;justify-content:space-between;font-size:16px;font-weight:bold;margin-top:12px;padding-top:10px;border-top:2px dashed #cbd5e1;color:#111827}
 .productCodeBadge{display:inline-block;background:#e11d48;color:#fff;padding:2px 8px;border-radius:4px;font-weight:bold;font-size:12px;margin-top:4px}
 
-/* Notification Box */
-.toast-msg{position:fixed;top:20px;right:20px;background:#111827;color:#fff;padding:14px 20px;border-radius:10px;box-shadow:0 10px 25px rgba(0,0,0,0.2);display:none;z-index:200;font-size:14px;border-left:4px solid #e11d48}
+/* Change 3: Order Confirmation Card Styling */
+.confirm-modal-box{text-align:center;padding:10px 10px 20px 10px}
+.success-icon{width:70px;height:70px;background:#10b981;color:#fff;border-radius:50%;display:grid;place-items:center;font-size:36px;margin:0 auto 15px auto;box-shadow:0 10px 20px rgba(16, 185, 129, 0.3)}
+.confirm-details{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:15px;margin:20px 0;text-align:left;font-size:13px;line-height:1.7}
 
+/* Responsive Fixes & Change 2: Phone Aspect Ratio Fix */
 @media (max-width: 768px) {
   header{height:auto;padding:12px;flex-wrap:wrap;gap:10px}
   .logo{font-size:18px}
   .search{order:3;max-width:100%;margin:5px 0 0 0;width:100%}
   .hero{grid-template-columns:1fr;padding:20px;margin:15px;border-radius:16px;gap:20px}
   .hero h1{font-size:28px;margin:10px 0}
-  .products{grid-template-columns:repeat(2,1fr);gap:10px}
-  .product img{height:150px}
+  .heroSlide img{height:220px}
+  
+  /* Change 2: Maintaining Product ratio on phone screen */
+  .products{grid-template-columns:repeat(2,1fr);gap:12px}
+  .product img{height:220px !important; aspect-ratio:1/1; object-fit:cover} 
+  
   .info{padding:10px}
   .info h3{font-size:12px;line-height:1.3;min-height:32px}
   .price{font-size:15px;margin-bottom:8px}
@@ -152,6 +166,7 @@ footer{background:#09111f;color:#cbd5e1;padding:45px 5%;margin-top:60px}
   <button onclick="filterCat('Casual Shirts',this)">Casual Shirts</button>
 </nav>
 
+<!-- Change 1: Dynamic Auto-Slide Hero Section -->
 <section class="hero">
   <div>
     <small>⚡ NEW FASHION COLLECTION 2026</small>
@@ -159,10 +174,9 @@ footer{background:#09111f;color:#cbd5e1;padding:45px 5%;margin-top:60px}
     <p>Discover premium cotton men's t-shirts, stylish hoodies, and trendy casual shirts at unbeatable prices from NMS Fashion.</p>
     <a href="#products" class="btn primary">Shop Collection →</a>
   </div>
-  <div class="heroProduct">
-    <img src="https://smartdeal.com.bd/public/uploads/all/2xEwNrkc6EeHaDTIGnsWCVyjQ107yrTspDBlkPIy.jpg" alt="Featured product">
-    <h3 style="margin:10px 0 5px;font-size:14px">Men Premium Cotton Casual T-Shirt</h3>
-    <strong style="color:#e11d48">৳350</strong>
+  <div class="heroProductWrapper">
+    <div class="heroSlider" id="heroSlider"></div>
+    <div class="heroDots" id="heroDots"></div>
   </div>
 </section>
 
@@ -215,9 +229,6 @@ footer{background:#09111f;color:#cbd5e1;padding:45px 5%;margin-top:60px}
 <a href="https://wa.me/8801571507523?text=Hello!%20I%20want%20to%20know%20more%20about%20your%20products." target="_blank" class="floating-whatsapp" title="Chat on WhatsApp">
   💬
 </a>
-
-<!-- Toast Notification -->
-<div class="toast-msg" id="toastMsg"></div>
 
 <!-- Unified Modal Container -->
 <div class="modal" id="appModal">
@@ -737,6 +748,52 @@ const products = [
   }
 ];
 
+/* Change 1 JS: Auto 3-second Hero Carousel Logic */
+let currentHeroIndex = 0;
+let heroTimer = null;
+const featuredProducts = products.slice(0, 5); // Pick first 5 featured items
+
+function initHeroSlider() {
+  const slider = document.getElementById('heroSlider');
+  const dots = document.getElementById('heroDots');
+  
+  slider.innerHTML = featuredProducts.map(p => `
+    <div class="heroSlide">
+      <img src="${p.image}" alt="${p.name}">
+      <h3 style="margin:10px 0 3px;font-size:14px">${p.name}</h3>
+      <strong style="color:#e11d48">৳${p.price}</strong>
+    </div>
+  `).join('');
+
+  dots.innerHTML = featuredProducts.map((_, idx) => `
+    <div class="heroDot ${idx === 0 ? 'active' : ''}" onclick="goToSlide(${idx})"></div>
+  `).join('');
+
+  startHeroAutoSlide();
+}
+
+function updateSlider() {
+  const slider = document.getElementById('heroSlider');
+  slider.style.transform = `translateX(-${currentHeroIndex * 100}%)`;
+  document.querySelectorAll('.heroDot').forEach((dot, idx) => {
+    dot.classList.toggle('active', idx === currentHeroIndex);
+  });
+}
+
+function startHeroAutoSlide() {
+  if (heroTimer) clearInterval(heroTimer);
+  heroTimer = setInterval(() => {
+    currentHeroIndex = (currentHeroIndex + 1) % featuredProducts.length;
+    updateSlider();
+  }, 3000); // 3 seconds interval
+}
+
+function goToSlide(index) {
+  currentHeroIndex = index;
+  updateSlider();
+  startHeroAutoSlide(); // reset timer on manual click
+}
+
 function renderProducts(items) {
   const container = document.getElementById('productGrid');
   document.getElementById('result').textContent = `${items.length} items found`;
@@ -894,15 +951,7 @@ function updateTotal(basePrice) {
   document.getElementById('summaryGrandTotal').textContent = `৳${grandTotal}`;
 }
 
-function showToast(msg) {
-  const toast = document.getElementById('toastMsg');
-  toast.textContent = msg;
-  toast.style.display = 'block';
-  setTimeout(() => {
-    toast.style.display = 'none';
-  }, 4000);
-}
-
+/* Change 3: Order Confirmation Modal Handler */
 async function handleOrderSubmit(e, prodId) {
   e.preventDefault();
 
@@ -956,12 +1005,12 @@ async function handleOrderSubmit(e, prodId) {
       throw new Error(result.error || 'Order submission failed');
     }
 
-    showToast(`ধন্যবাদ ${name}! আপনার অর্ডারটি জমা হয়েছে। আমরা শীঘ্রই ${phone} নম্বরে কল করবো।`);
-    closeModal();
+    // Change 3: Screen-Center Big Confirmation View
+    showCenterConfirmation(name, phone, product.name, total, address);
+
   } catch (error) {
     console.error('Order submission error:', error);
-    showToast('অর্ডার জমা হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।');
-  } finally {
+    alert('অর্ডার জমা হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।');
     if (submitButton) {
       submitButton.disabled = false;
       submitButton.textContent = 'Confirm Order (Cash On Delivery)';
@@ -969,10 +1018,38 @@ async function handleOrderSubmit(e, prodId) {
   }
 }
 
+/* Change 3 Function: Renders Screen Centered Pop-up */
+function showCenterConfirmation(name, phone, prodName, total, address) {
+  document.getElementById('modalContent').innerHTML = `
+    <div class="confirm-modal-box">
+      <div class="success-icon">✓</div>
+      <h2 style="margin:0 0 10px 0;color:#10b981;font-size:26px">অর্ডারটি সফলভাবে কনফার্ম হয়েছে!</h2>
+      <p style="color:#64748b;margin:0 0 15px 0">ধন্যবাদ <strong>${name}</strong>, NMS Fashion-এ অর্ডার করার জন্য।</p>
+
+      <div class="confirm-details">
+        <div><strong>Product Name:</strong> ${prodName}</div>
+        <div><strong>Contact Phone:</strong> ${phone}</div>
+        <div><strong>Delivery Address:</strong> ${address}</div>
+        <div style="font-size:15px;margin-top:8px;border-top:1px solid #e2e8f0;padding-top:8px">
+          <strong>Total Payable Amount:</strong> <span style="color:#e11d48;font-weight:bold">৳${total}</span> (Cash on Delivery)
+        </div>
+      </div>
+
+      <p style="font-size:12px;color:#0f172a">অর্ডারটির বিবরণ যাচাই করার জন্য আমরা খুব শীঘ্রই <strong>${phone}</strong> নম্বরে কল করব।</p>
+      
+      <button onclick="closeModal()" class="btn primary" style="width:100%;max-width:280px;padding:12px 20px;font-size:15px;margin-top:15px">
+        Continue Shopping
+      </button>
+    </div>
+  `;
+}
+
 function closeModal() {
   document.getElementById('appModal').classList.remove('show');
 }
 
+// Initializations
+initHeroSlider();
 renderProducts(products);
 </script>
 </body>
